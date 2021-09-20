@@ -88,3 +88,173 @@ Summary_user_verified = Tweets2 %>%
             min_followers = min(user_followers_count),
             max_followers = max(user_followers_count)
             )
+## Removing blank row from Summary_user_verified 
+Summary_user_verified2 = Summary_user_verified[-c(1),]
+
+## Summary of Users who are Replying to Trump 
+SummaryTrump = Tweets2 %>% 
+  filter(tweet_in_reply_to_screen_name == "realDonaldTrump") %>% 
+  summarize(avg_favorites = mean(tweet_favorite_count),
+            min_favorites = min(tweet_favorite_count),
+            max_favorites = max(tweet_favorite_count),
+            avg_retweets = mean(tweet_retweet_count),
+            min_retweets = min(tweet_retweet_count),
+            max_retweets = max(tweet_retweet_count),
+            avg_followers = mean(user_followers_count),
+            min_followers = min(user_followers_count),
+            max_followers = max(user_followers_count)
+  )
+
+## Summary of Users who are Replying to Colin Kaepernick7 
+SummaryKaep = Tweets2 %>% 
+  filter(tweet_in_reply_to_screen_name == "Kaepernick7") %>% 
+  summarize(avg_favorites = mean(tweet_favorite_count),
+            min_favorites = min(tweet_favorite_count),
+            max_favorites = max(tweet_favorite_count),
+            avg_retweets = mean(tweet_retweet_count),
+            min_retweets = min(tweet_retweet_count),
+            max_retweets = max(tweet_retweet_count),
+            avg_followers = mean(user_followers_count),
+            min_followers = min(user_followers_count),
+            max_followers = max(user_followers_count)
+  )
+ 
+## Summary of Users who are Replying to Nike
+SummaryNike = Tweets2 %>% 
+  filter(tweet_in_reply_to_screen_name == "Nike") %>% 
+  summarize(avg_favorites = mean(tweet_favorite_count),
+            min_favorites = min(tweet_favorite_count),
+            max_favorites = max(tweet_favorite_count),
+            avg_retweets = mean(tweet_retweet_count),
+            min_retweets = min(tweet_retweet_count),
+            max_retweets = max(tweet_retweet_count),
+            avg_followers = mean(user_followers_count),
+            min_followers = min(user_followers_count),
+            max_followers = max(user_followers_count)
+  )
+ 
+## Tweets with the Most Favorites! 
+TopFav = Tweets2 %>% 
+  top_n(10, tweet_favorite_count) %>% 
+  select(tweet_favorite_count,tweet_full_text, user_screen_name, user_verified) %>% 
+  arrange(desc(user_verified)) 
+ 
+## Tweets with the Most Retweets!
+TopRT = Tweets2 %>% 
+  top_n(10, tweet_retweet_count) %>% 
+  select(tweet_retweet_count, tweet_full_text, user_screen_name, user_verified) %>% 
+  arrange(desc(user_verified)) 
+ 
+## Tokenizing the Text - Making a Word Column!
+tidy_twitter = Tweets %>% 
+  unnest_tokens(word,tweet_full_text) 
+
+## Adding A New Dataframe called custom_stop_words 
+custom_stop_words = tribble(~word, "t.co", "https", "it's","means", "i'm")
+
+## Combining custom_stop_words to the data frame stop_words
+stop_words2 = stop_words %>% 
+  bind_rows(custom_stop_words)
+  
+## Counting the Tokenized Text - Removing stop_words from text - Arranging the data frame in descending order
+tidy_twitter2 = tidy_twitter %>% 
+  count(word) %>% 
+  anti_join(stop_words2) %>% 
+  arrange(desc(n))
+ 
+## Filtering out any words less than 2 tokens
+word_count = tidy_twitter2 %>% 
+  filter(n>1)
+
+## Showing the Top 30 Words Used in Response to the Original Tweet - Reordering by the Word Count (n)
+word_count2 = word_count %>% 
+  top_n(30) %>% 
+  mutate(word2 = fct_reorder(word, n))
+
+## Visualization of Word Count
+word_countplot2 = ggplot(word_count2, aes(x = word2, y = n, fill = n))+
+  geom_col(show.legend = FALSE)+
+  coord_flip()+
+  labs(title = "Keywords Used in Response to the Ad Campaign",
+       subtitle = "Sample Size: 5,000 Tweets That Contain '#JustDoIt'",
+       x = "Word",
+       y = "Number of Occurrences")
+
+## Word Count for Top 10 Most Favorited Tweets
+TopFav_word = TopFav %>% 
+  unnest_tokens(word, tweet_full_text)
+
+## TopFav Word Count
+TopFav_wordcount = TopFav_word %>% 
+  count(word) %>% 
+  mutate(FavWord = fct_reorder(word, n)) %>% 
+  anti_join(stop_words2) %>% 
+  top_n(30,n)
+
+## Visualization of Tokenized Text in the Top 10 Favorited Tweets 
+TopFav_wordcountplot = ggplot(TopFav_wordcount, aes(x=FavWord, y=n, fill=n))+
+  geom_col(show.legend = FALSE)+
+  coord_flip()+
+  labs(title = "Keywords Used in Response to the Ad Campaign",
+       subtitle = "Sample Size: Top 10 Favorited Tweets",
+       x = "Word",
+       y = "Number of Occurrences")
+
+## Word Count for Top 10 Most Retweeted Tweets
+TopRT_word = TopRT %>% 
+  unnest_tokens(word, tweet_full_text)
+
+TopRT_wordcount = TopRT_word %>% 
+  count(word) %>% 
+  mutate(RTWord = fct_reorder(word,n)) %>% 
+  anti_join(stop_words2) %>% 
+  top_n(30, n)
+  
+## Visualization of Tokenized Text in the Top 10 Favorited Retweets 
+TopRT_wordcountplot = ggplot(TopRT_wordcount, aes(x=RTWord, y=n, fill=n))+
+  geom_col(show.legend = FALSE)+
+  coord_flip()+
+  labs(title = "Keywords Used in Response to the Ad Campaign",
+       subtitle = "Sample Size: Top 10 Retweeted Tweets",
+       x = "Word",
+       y = "Number of Occurrences")
+
+## Appending Dictionaries - bing
+Append_twitter = tidy_twitter %>% 
+  inner_join(get_sentiments("bing"))
+
+## Counting Sentiment
+Count_twitter_sentiment = Append_twitter %>% 
+  count(word, sentiment) %>% 
+  arrange(desc(n))
+ 
+## Visualizing Sentiment
+sentiment_twitter = Count_twitter_sentiment %>% 
+  filter(sentiment %in% c("positive", "negative")) %>% 
+  top_n(55, n)
+
+ggplot(sentiment_twitter, aes(x=word, y=n, fill=sentiment))+
+  geom_col(show.legend = FALSE)+
+  facet_wrap(~sentiment, scales = "free")+
+  coord_flip()+
+  labs(title = "Sentiment Word Counts", x = "Words")
+
+## Using spread() to spread the sentiment column in to two separate columns (e.g., pos or neg)
+xyz = Append_twitter %>% 
+  count(tweet_in_reply_to_screen_name, sentiment) %>% 
+  spread(sentiment, n)
+  
+## Topic Models 
+DTM = tidy_twitter2 %>% 
+  count(word, id) %>% 
+  cast_dtm(id, word, n)
+
+lda_out = LDA(DTM, k = 2, method = "Gibbs", control = list(seed=42))
+
+glimpse(lda_out)
+
+tidy(lda_out)
+
+
+
+
