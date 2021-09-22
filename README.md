@@ -75,6 +75,9 @@ Replies_plot = ggplot(data=Replies_3, aes(x=n2, y=n, fill = n))+
   xlab("Twitter Handle")+
   ylab("Number of Replies")
 
+![image](https://user-images.githubusercontent.com/90916159/134436474-388dc60b-6a4d-4708-8299-6adbf623db34.png)
+
+
 # Summary of Verified Users vs Unverified Users - Favorites / Retweets / Followers
 Summary_user_verified = Tweets2 %>% 
   group_by(user_verified) %>% 
