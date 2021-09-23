@@ -1,7 +1,7 @@
 # (Project Overview: Text Analysis)(https://nrolle.github.io/-JustDoIt-Nike-Tweets/)
 
-- How to Wrangle and Visualize Text 
-- Perform Sentiment Analysis
+- Wrangling and Visualizing Text using the Tokenization method 
+- Discovering the emotional valence of the text using Sentiment Analysis
 - Run and Interpret Topic Models
 
 
@@ -183,6 +183,8 @@ word_countplot2 = ggplot(word_count2, aes(x = word2, y = n, fill = n))+
        x = "Word",
        y = "Number of Occurrences")
 
+![image](https://user-images.githubusercontent.com/90916159/134451292-f76a0d48-71f2-408e-ac88-300f991b9bd7.png)
+
 ## Word Count for Top 10 Most Favorited Tweets
 TopFav_word = TopFav %>% 
   unnest_tokens(word, tweet_full_text)
@@ -203,6 +205,8 @@ TopFav_wordcountplot = ggplot(TopFav_wordcount, aes(x=FavWord, y=n, fill=n))+
        x = "Word",
        y = "Number of Occurrences")
 
+![image](https://user-images.githubusercontent.com/90916159/134451340-0cc33d9d-322e-42df-8c5c-4215dbf60292.png)
+
 ## Word Count for Top 10 Most Retweeted Tweets
 TopRT_word = TopRT %>% 
   unnest_tokens(word, tweet_full_text)
@@ -222,6 +226,8 @@ TopRT_wordcountplot = ggplot(TopRT_wordcount, aes(x=RTWord, y=n, fill=n))+
        x = "Word",
        y = "Number of Occurrences")
 
+![image](https://user-images.githubusercontent.com/90916159/134451358-554704cb-1586-48b5-8d07-19b33e356d19.png)
+
 ## Appending Dictionaries - bing
 Append_twitter = tidy_twitter %>% 
   inner_join(get_sentiments("bing"))
@@ -235,12 +241,14 @@ Count_twitter_sentiment = Append_twitter %>%
 sentiment_twitter = Count_twitter_sentiment %>% 
   filter(sentiment %in% c("positive", "negative")) %>% 
   top_n(55, n)
-
+  
 ggplot(sentiment_twitter, aes(x=word, y=n, fill=sentiment))+
   geom_col(show.legend = FALSE)+
   facet_wrap(~sentiment, scales = "free")+
   coord_flip()+
   labs(title = "Sentiment Word Counts", x = "Words")
+  
+ ![image](https://user-images.githubusercontent.com/90916159/134451405-969849b7-2ac6-4478-8ab7-e42fea821fe1.png)
 
 ## Using spread() to spread the sentiment column in to two separate columns (e.g., pos or neg)
 xyz = Append_twitter %>% 
