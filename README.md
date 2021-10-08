@@ -1,8 +1,6 @@
 # (Project Overview: Text Analysis)(https://nrolle.github.io/-JustDoIt-Nike-Tweets/)
 
-- Wrangling and Visualizing Text using the Tokenization method 
-- Discovering the emotional valence of the text using Sentiment Analysis
-- Run and Interpret Topic Models
+This is a case study surrounding a marketing campaign conducted by Nike back in 2018. The dataset contains approximately 5,000 tweets in response to the marketing campaign. This particular marketing campaign is significant to me because it marked the day that Nike publicly stood with athlete and activist Colin Kaepernick in his efforts to bring attention to police brutality and the mistreatment of black and brown people in the United States. The objective of this project is to gain some insight in how the public reacted to Nike's marketing campaign. I will be accomplishing this through tokenzing the text, sentiment analysis, and some graphical and numerical summaries of the dataset. 
 
 
 ## Code and Resources Used
@@ -50,20 +48,48 @@ Tweets = Tweet %>%
   select(-user_created_at) %>% 
   select(-user_profile_background_image_url)
 
-## Removing the Mark Hamill Tweet 
+## Removing the Mark Hamill Tweet - it had nothing to do with the Nike marketing campaign
 Tweets2 = Tweets[-c(1466),]
 
-# Top Screen Names Receiving Replies
+# Let's take a look at the Twitter users who received the most replies following the Nike tweet
 Replies = Tweets2 %>% 
   select(tweet_in_reply_to_screen_name) %>% 
   count(tweet_in_reply_to_screen_name) %>% 
   arrange(desc(tweet_in_reply_to_screen_name)) %>% 
   top_n(10)
-  
-# Removing the Blank Row in Replies 
+
+## tweet_in_reply_to_screen_name    n
+1                 serenawilliams   15
+2                realDonaldTrump  293
+3                           Nike  157
+4                     larryelder    6
+5                    Kaepernick7   54
+6                        FoxNews    7
+7                     CoryBooker   11
+8                  CofOHardWorkU    5
+9                        CBSNews   12
+10                       agodgmt    5
+11                           ABC    5
+12                               3841
+
+# Removing the Blank Row in the 'Replies' table 
 Replies_2 = Replies[-c(12),]
 
-# Fct_reorder - Cleaning up the Graph
+## Output  
+  tweet_in_reply_to_screen_name   n
+1                 serenawilliams  15
+2                realDonaldTrump 293
+3                           Nike 157
+4                     larryelder   6
+5                    Kaepernick7  54
+6                        FoxNews   7
+7                     CoryBooker  11
+8                  CofOHardWorkU   5
+9                        CBSNews  12
+10                       agodgmt   5
+11                           ABC   5
+
+# Using fct_reorder() to rearrange the above table 
 Replies_3 = Replies_2 %>% 
   mutate(n2 = fct_reorder(tweet_in_reply_to_screen_name, n))
   
