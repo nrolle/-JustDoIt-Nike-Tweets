@@ -1,4 +1,4 @@
-# (Project Overview: Text Analysis)(https://nrolle.github.io/-JustDoIt-Nike-Tweets/)
+# (Project Overview: Nike #JustDoIt Case Study)(https://nrolle.github.io/-JustDoIt-Nike-Tweets/)
 
 This is a case study surrounding a marketing campaign conducted by Nike back in 2018. The dataset contains approximately 5,000 tweets in response to the marketing campaign. This particular marketing campaign is significant to me because it marked the day that Nike publicly stood with athlete and activist Colin Kaepernick in his efforts to bring attention to police brutality and the mistreatment of black and brown people in the United States. The objective of this project is to gain some insight in how the public reacted to Nike's marketing campaign. I will be accomplishing this through tokenzing the text, sentiment analysis, and some graphical and numerical summaries of the dataset. 
 
@@ -57,37 +57,9 @@ Replies = Tweets2 %>%
   count(tweet_in_reply_to_screen_name) %>% 
   arrange(desc(tweet_in_reply_to_screen_name)) %>% 
   top_n(10)
-
-## tweet_in_reply_to_screen_name    n
-1                 serenawilliams   15
-2                realDonaldTrump  293
-3                           Nike  157
-4                     larryelder    6
-5                    Kaepernick7   54
-6                        FoxNews    7
-7                     CoryBooker   11
-8                  CofOHardWorkU    5
-9                        CBSNews   12
-10                       agodgmt    5
-11                           ABC    5
-12                               3841
-
+  
 # Removing the Blank Row in the 'Replies' table 
 Replies_2 = Replies[-c(12),]
-
-## Output  
-  tweet_in_reply_to_screen_name   n
-1                 serenawilliams  15
-2                realDonaldTrump 293
-3                           Nike 157
-4                     larryelder   6
-5                    Kaepernick7  54
-6                        FoxNews   7
-7                     CoryBooker  11
-8                  CofOHardWorkU   5
-9                        CBSNews  12
-10                       agodgmt   5
-11                           ABC   5
 
 # Using fct_reorder() to rearrange the above table 
 Replies_3 = Replies_2 %>% 
@@ -211,6 +183,14 @@ word_countplot2 = ggplot(word_count2, aes(x = word2, y = n, fill = n))+
 
 ![image](https://user-images.githubusercontent.com/90916159/134451292-f76a0d48-71f2-408e-ac88-300f991b9bd7.png)
 
+# Word Cloud of the Word Count
+wordcloud(words = word_count2$word,
+          freq = word_count2$n,
+          max.words = 400)
+
+![image](https://user-images.githubusercontent.com/90916159/136512945-c018fde5-21c1-427b-9125-b7c0379c13b9.png)
+
+
 ## Word Count for Top 10 Most Favorited Tweets
 TopFav_word = TopFav %>% 
   unnest_tokens(word, tweet_full_text)
@@ -281,16 +261,7 @@ xyz = Append_twitter %>%
   count(tweet_in_reply_to_screen_name, sentiment) %>% 
   spread(sentiment, n)
   
-## Topic Models 
-DTM = tidy_twitter2 %>% 
-  count(word, id) %>% 
-  cast_dtm(id, word, n)
 
-lda_out = LDA(DTM, k = 2, method = "Gibbs", control = list(seed=42))
-
-glimpse(lda_out)
-
-tidy(lda_out)
 
 
 
