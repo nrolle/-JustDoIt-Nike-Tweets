@@ -34,8 +34,8 @@ Dataset(https://www.kaggle.com/eliasdabbas/5000-justdoit-tweets-dataset?select=j
 ## Sentiment Analysis 
 - I used the "NRC" dictionary to examine the overall emotional valence of the text
 - The "NRC" dictionary defines each unique word as either negative, postiive, fear, anger, trust, sadness, disgust, anticipation, joy, or surprise
-![]
 
+![alt text](b91e33cd-d9ed-45c2-91e2-3d2611227db7.jpg)
 
 #JustDoIt Case Study
 
