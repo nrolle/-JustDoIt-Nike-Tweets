@@ -8,7 +8,21 @@ This is a case study surrounding a marketing campaign conducted by Nike back in 
 **Packages:** tidyverse, dplyr, tibble, tidytext, textdata, topicmodels, tm
 Dataset(https://www.kaggle.com/eliasdabbas/5000-justdoit-tweets-dataset?select=justdoit_tweets_2018_09_07_2.csv)
 
-## Setting up the R environment - Loading Libraries 
+#JustDoIt Case Study
+
+###################################################
+
+##install necessary packages 
+#install.packages("tidyverse")
+#install.packages("dplyr")
+#install.packages("tibble")
+#install.packages("tidytext")
+#install.packages("textdata")
+#install.packages("topicmodels")
+#install.packages("tm")
+#install.packages("wordcloud2")
+
+# Setting up the R Environment - Loading Libraries 
 library(tidyverse)
 library(dplyr)
 library(tibble)
@@ -16,253 +30,259 @@ library(tidytext)
 library(textdata)
 library(topicmodels)
 library(tm)
+library(wordcloud2)
 
-## Read in File 
-Tweet = read.csv("/Users/nickrolle/Downloads/justdoit_tweets_2018_09_07_2.csv")
+# Read in File
+JustDoIt = read.csv("C:/Users/Nick/Desktop/justdoit_tweets_2018_09_07_2.csv")
 
-## Dimension of input file
-nrow(Tweet)
-ncol(Tweet)
-dim(Tweet)
-str(Tweet)
+######################################################################################################
 
-## Sample Tweets Text
-head(Tweet$tweet_full_text)
+# Selecting relevant columns
+Tweets = JustDoIt %>% 
+  select(tweet_full_text, user_verified, tweet_retweet_count, tweet_favorite_count, user_screen_name, tweet_in_reply_to_screen_name, user_description, user_followers_count)
 
-## Removing Columns Insignificant to Our Analysis
-Tweets = Tweet %>% 
-  select(-tweet_contributors) %>% 
-  select(-tweet_geo) %>% 
-  select(-tweet_id) %>% 
-  select(-tweet_id_str) %>% 
-  select(-tweet_in_reply_to_status_id_str) %>% 
-  select(-tweet_quoted_status) %>% 
-  select(-tweet_source) %>% 
-  select(-user_description) %>% 
-  select(-tweet_coordinates) %>% 
-  select(-tweet_favorited) %>% 
-  select(-tweet_in_reply_to_status_id) %>% 
-  select(-tweet_quoted_status_id) %>% 
-  select(-tweet_quoted_status_id_str) %>% 
-  select(-tweet_retweeted) %>% 
-  select(-user_created_at) %>% 
-  select(-user_profile_background_image_url)
+# Number of rows in the Dataset 
+nrow(Tweets)
 
-## Removing the Mark Hamill Tweet - it had nothing to do with the Nike marketing campaign
+# Number of columns in the Dataset
+ncol(Tweets)
+
+# Overview of the Dataset
+str(Tweets)
+
+# Sample Tweet 
+sample = Tweets %>% 
+  select(user_screen_name, tweet_full_text)
+
+sample_n(sample,1)
+
+# Removing the Mark Hamill Tweet 
 Tweets2 = Tweets[-c(1466),]
 
-# Let's take a look at the Twitter users who received the most replies following the Nike tweet
+######################################################################################################
+# Tokenzing the Dataset
+tidy_Tweets = Tweets2 %>% 
+  unnest_tokens(word,tweet_full_text) %>% 
+  anti_join(stop_words2)
+
+# Counting words
+count_Tweets = tidy_Tweets %>% 
+  count(word) %>%
+  arrange(desc(n))
+
+# Using inner_join to join our tokenized dataframe and the nrc dictionary  
+sentiment_tweets = tidy_Tweets %>% 
+  inner_join(get_sentiments("nrc"))
+
+# Counting sentiment 
+sentiment_count = sentiment_tweets %>% 
+  count(sentiment) %>% 
+  arrange(desc(n)) %>% 
+  mutate(sentiment2 = fct_reorder(sentiment,n))
+
+# Visualizing sentiment 
+ggplot(sentiment_count, aes(x=sentiment2, y=n, fill = sentiment))+
+  geom_col(show.legend = FALSE)+
+  coord_flip()+
+  labs(title = "Sentiment Counts Using NRC",
+       x= "Sentiment",
+       y= "Counts")
+
+# Tibble to show each sentiment 
+word_counts = sentiment_tweets %>% 
+  count(word, sentiment) %>% 
+  group_by(sentiment) %>% 
+  top_n(10, n) %>% 
+  ungroup() %>% 
+  mutate(word2 = fct_reorder(word, n))
+
+# Visualizing each sentiment 
+ggplot(word_counts, aes(x=word2, y=n,fill=sentiment))+
+  geom_col(show.legend = FALSE)+
+  facet_wrap(~sentiment, scales="free")+
+  coord_flip()+
+  labs(title = "Sentiment Word Counts",
+       x="Words")
+
+######################################################################################################
+# Top Twitter Handles mentioned
 Replies = Tweets2 %>% 
   select(tweet_in_reply_to_screen_name) %>% 
   count(tweet_in_reply_to_screen_name) %>% 
   arrange(desc(tweet_in_reply_to_screen_name)) %>% 
   top_n(10)
-  
-# Removing the Blank Row in the 'Replies' table 
+
+# Removing the Blank Row in Replies 
 Replies_2 = Replies[-c(12),]
 
-# Using fct_reorder() to rearrange the above table 
+# Fct_reorder - Cleaning up for the Graph
 Replies_3 = Replies_2 %>% 
   mutate(n2 = fct_reorder(tweet_in_reply_to_screen_name, n))
-  
-# Visualization of Replies_2 - Removal of "Blank Spaces" - Top 11 @'s Replied To
-Replies_plot = ggplot(data=Replies_3, aes(x=n2, y=n, fill = n))+
-  geom_bar(stat="identity")+
+
+# Visualization of Replies_2 
+ggplot(data=Replies_3, aes(x=n2, y=n, fill = n2))+
+  geom_bar(stat="identity", show.legend = FALSE)+
   coord_flip()+
-  ggtitle("Tweets in Reply To...")+
+  ggtitle("Top Twitter Handles Mentioned")+
   xlab("Twitter Handle")+
-  ylab("Number of Replies")
+  ylab("Number of Mentions")
 
-![image](https://user-images.githubusercontent.com/90916159/134436474-388dc60b-6a4d-4708-8299-6adbf623db34.png)
+######################################################################################################
 
+# Filtering for tweets that mention Donald Trump 
+Trump = Tweets2 %>% 
+  filter(Tweets2$tweet_in_reply_to_screen_name == "realDonaldTrump")
 
-# Summary of Verified Users vs Unverified Users - Favorites / Retweets / Followers
-Summary_user_verified = Tweets2 %>% 
-  group_by(user_verified) %>% 
-  summarize(avg_favorites = mean(tweet_favorite_count),
-            min_favorites = min(tweet_favorite_count),
-            max_favorites = max(tweet_favorite_count),
-            avg_retweets = mean(tweet_retweet_count),
-            min_retweets = min(tweet_retweet_count),
-            max_retweets = max(tweet_retweet_count),
-            avg_followers = mean(user_followers_count),
-            min_followers = min(user_followers_count),
-            max_followers = max(user_followers_count)
-            )
-## Removing blank row from Summary_user_verified 
-Summary_user_verified2 = Summary_user_verified[-c(1),]
+# Removing words that are insigificant to the analysis
+custom_stop_words = tribble(~word,
+                            "â","ðÿ","https","ï","t.co","realdonaldtrump",
+                            "thinking","amp","kaepernick7","kaepernick", 
+                            "president","justdoit","nike","trump",
+                            "people","ºðÿ","youâ","âœ","takeaknee","colinkaepernick","donâ","theyâ",
+                            "ðÿš","potus","black","job","ve","shoes","white","unlike","money","real","weâ",
+                            "wear","means","message","buy","stock","amendement","business","america",
+                            "tweet", "world","time","american","country","care","americans","ˆðÿ‘ÿðÿ",
+                            "attention","bought","hey","canâ","ðÿ’ªðÿ","iâ","idk","paid","thatâ",
+                            "wearing","commercial", "ad", "campaign","âœšðÿ","itâ","nikead","å","athletes",
+                            "justdidit","marketing","pair","bogo","æœ","œðÿ","ä","15","ck","colin","æ",
+                            "advertising",
+                            "cqzvnmockn","doesnâ","customer","kapernick","nfl","æ­","apparel","ðÿ‘œ",
+                            "ðÿ‘ÿ","nikeâ","nikecommercial","nikestore","serenawilliams","tonight's",
+                            "waiting","yâ","workers","weekend","taking","saturday","ðÿž","advances","7th",
+                            "ceio2wcuyr","gkzrtyolqk","ll","lil","olc766xhvz","quicker","tonightâ",
+                            "womenâ","themasb1","cutieðÿ’œ","ðÿ’ª","2","5i9egyh9tk","paylessinsider",
+                            "payless","nflpa","nflcommish","gbmnyc","kstills",
+                            "mosesbread72","1jedi_rey","havok_2o18","theswprincess","listentoezra",
+                            "debbieinsideris","jeffbfish","knot4sharing","malcolmjenkins","kingjames",
+                            "imwithkaep", "matthewwolfff","kneel","jynerso_2017","jainaresists","b52malmet",
+                            "deadpoolresists","debbiesideris","jynerso_2017","lady_star_gem","minervasbard",
+                            "natcookresists","rebelscumpixie","sabineresists","trinityresists","drawing",
+                            "batmanresist","brandontxneely","blue","captainslog2o18","earl_thomas","exercise",
+                            "nateboyer37","plays","realtomsongs","tdlockett12","trisresists","xtxoan4y7d",
+                            "ybbkaren","zmndpufdoh", "president","police","football","gear","lord","god",
+                            "military","catch","school","labor","wait","feeling","vote","pay","deal","words","coming",
+                            "finally","shot","chance","guess","leave","change","mouth","fisa","1st","1",
+                            "10","nikes","blah","orange","buying","single","anonymous","office","stuff",
+                            "life","kids","lie","bad","btw","concept","level","players","kap",
+                            "national","serve","social","sell","company","true","decision","watching","running",
+                            "guy","ooh","f45", "gum", "chose","yr","uk","ðÿž","ev","front","head","chaserâ",
+                            "dawn","jedimasterdre","land")
 
-## Summary of Users who are Replying to Trump 
-SummaryTrump = Tweets2 %>% 
-  filter(tweet_in_reply_to_screen_name == "realDonaldTrump") %>% 
-  summarize(avg_favorites = mean(tweet_favorite_count),
-            min_favorites = min(tweet_favorite_count),
-            max_favorites = max(tweet_favorite_count),
-            avg_retweets = mean(tweet_retweet_count),
-            min_retweets = min(tweet_retweet_count),
-            max_retweets = max(tweet_retweet_count),
-            avg_followers = mean(user_followers_count),
-            min_followers = min(user_followers_count),
-            max_followers = max(user_followers_count)
-  )
-
-## Summary of Users who are Replying to Colin Kaepernick7 
-SummaryKaep = Tweets2 %>% 
-  filter(tweet_in_reply_to_screen_name == "Kaepernick7") %>% 
-  summarize(avg_favorites = mean(tweet_favorite_count),
-            min_favorites = min(tweet_favorite_count),
-            max_favorites = max(tweet_favorite_count),
-            avg_retweets = mean(tweet_retweet_count),
-            min_retweets = min(tweet_retweet_count),
-            max_retweets = max(tweet_retweet_count),
-            avg_followers = mean(user_followers_count),
-            min_followers = min(user_followers_count),
-            max_followers = max(user_followers_count)
-  )
- 
-## Summary of Users who are Replying to Nike
-SummaryNike = Tweets2 %>% 
-  filter(tweet_in_reply_to_screen_name == "Nike") %>% 
-  summarize(avg_favorites = mean(tweet_favorite_count),
-            min_favorites = min(tweet_favorite_count),
-            max_favorites = max(tweet_favorite_count),
-            avg_retweets = mean(tweet_retweet_count),
-            min_retweets = min(tweet_retweet_count),
-            max_retweets = max(tweet_retweet_count),
-            avg_followers = mean(user_followers_count),
-            min_followers = min(user_followers_count),
-            max_followers = max(user_followers_count)
-  )
- 
-## Tweets with the Most Favorites! 
-TopFav = Tweets2 %>% 
-  top_n(10, tweet_favorite_count) %>% 
-  select(tweet_favorite_count,tweet_full_text, user_screen_name, user_verified) %>% 
-  arrange(desc(user_verified)) 
- 
-## Tweets with the Most Retweets!
-TopRT = Tweets2 %>% 
-  top_n(10, tweet_retweet_count) %>% 
-  select(tweet_retweet_count, tweet_full_text, user_screen_name, user_verified) %>% 
-  arrange(desc(user_verified)) 
- 
-## Tokenizing the Text - Making a Word Column!
-tidy_twitter = Tweets %>% 
-  unnest_tokens(word,tweet_full_text) 
-
-## Adding A New Dataframe called custom_stop_words 
-custom_stop_words = tribble(~word, "t.co", "https", "it's","means", "i'm")
-
-## Combining custom_stop_words to the data frame stop_words
 stop_words2 = stop_words %>% 
   bind_rows(custom_stop_words)
-  
-## Counting the Tokenized Text - Removing stop_words from text - Arranging the data frame in descending order
-tidy_twitter2 = tidy_twitter %>% 
+
+# Tokenzing text 
+tidy_Trump = Trump %>% 
+  unnest_tokens(word, tweet_full_text) %>% 
+  anti_join(stop_words2)
+
+# Counting words in the text
+count_Trump = tidy_Trump %>% 
   count(word) %>% 
-  anti_join(stop_words2) %>% 
+  arrange(desc(n)) %>% 
+  top_n(50)
+
+# Word Cloud for words used when mentioning Donald Trump
+wordcloud2(count_Trump,
+           rotateRatio = 0)
+
+# Reordering the Count Dataframe for bar graph
+count_Trump2 = count_Trump %>% 
+  mutate(word2 = fct_reorder(word, n)) %>% 
+  top_n(50)
+
+# Visualizing the Count Dataframe 
+ggplot(count_Trump2, aes(x=word2, y=n, fill=word))+
+  geom_col(show.legend = FALSE)+
+  coord_flip()+
+  labs(title = "Words Frequently Used When Mentioning Trump", x = "Frequency", y = "Words")
+
+######################################################################################################
+# Filtering tweets that mention @Nike
+Nike = Tweets2 %>% filter(Tweets2$tweet_in_reply_to_screen_name == "Nike")
+
+# Tokenzing the text
+tidy_Nike = Nike %>% 
+  unnest_tokens(word, tweet_full_text) %>% 
+  anti_join(stop_words2)
+
+# Counting the text
+count_Nike = tidy_Nike %>% 
+  count(word) %>% 
+  arrange(desc(n)) %>%
+  top_n(50)
+
+# Word cloud of the word count
+wordcloud2(count_Nike, rotateRatio = 0)
+
+# Factor reordering the counnt data frame for visualization purposes
+plot_Nike = count_Nike %>% 
+  top_n(10) %>% 
+  mutate(word3 = fct_reorder(word,n))
+
+# Visualization of word count
+ggplot(data=plot_Nike, aes(x=word3, y=n, fill = word))+
+  geom_col(show.legend = FALSE)+
+  coord_flip()+
+  labs(title = "Words Frequently Used when Twitter mentioned @Nike", x = "Words", y = "Frequency")
+
+######################################################################################################
+
+# Tweets at Serena Williams
+Serena = Tweets2 %>% 
+  filter(Tweets2$tweet_in_reply_to_screen_name == "serenawilliams")
+
+# Tokenzing text - Serena Williams
+tidy_Serena = Serena %>% 
+  unnest_tokens(word, tweet_full_text) %>% 
+  anti_join(stop_words2)
+
+# Counting tokenized text - Serena Williams 
+count_Serena = tidy_Serena %>% 
+  count(word) %>% 
   arrange(desc(n))
- 
-## Filtering out any words less than 2 tokens
-word_count = tidy_twitter2 %>% 
-  filter(n>1)
 
-## Showing the Top 30 Words Used in Response to the Original Tweet - Reordering by the Word Count (n)
-word_count2 = word_count %>% 
-  top_n(30) %>% 
-  mutate(word2 = fct_reorder(word, n))
+# Visualizing Text - Serena Williams 
+wordcloud2(count_Serena, rotateRatio = 0)
 
-## Visualization of Word Count
-word_countplot2 = ggplot(word_count2, aes(x = word2, y = n, fill = n))+
+# Factor reorder for word count data frame
+plot_Serena = count_Serena %>% 
+  mutate(word4 = fct_reorder(word, n))
+
+# VIsualization 
+ggplot(data=plot_Serena, aes(x=word4,y=n, fill=word4))+
   geom_col(show.legend = FALSE)+
   coord_flip()+
-  labs(title = "Keywords Used in Response to the Ad Campaign",
-       subtitle = "Sample Size: 5,000 Tweets That Contain '#JustDoIt'",
-       x = "Word",
-       y = "Number of Occurrences")
+  labs(title = "Words Frequently Used When Twitter Mentioned @serenawilliams in a Tweet", 
+       x="Words",y="Frequency")
 
-![image](https://user-images.githubusercontent.com/90916159/134451292-f76a0d48-71f2-408e-ac88-300f991b9bd7.png)
+##########################################################################################
+# Filtering for tweets that mention @Kaepernick7
+Kaep = Tweets2 %>% 
+  filter(Tweets2$tweet_in_reply_to_screen_name == "Kaepernick7")
 
-# Word Cloud of the Word Count
-wordcloud(words = word_count2$word,
-          freq = word_count2$n,
-          max.words = 400)
+# Tokenzing the text 
+tidy_Kaep = Kaep %>% 
+  unnest_tokens(word, tweet_full_text) %>% 
+  anti_join(stop_words2)
+  
+# Counting the words 
+count_Kaep = tidy_Kaep %>% 
+  count(word) %>%
+  arrange(desc(n)) %>% 
+  top_n(25)
 
-![image](https://user-images.githubusercontent.com/90916159/136512945-c018fde5-21c1-427b-9125-b7c0379c13b9.png)
+# Word Cloud
+wordcloud2(count_Kaep, rotateRatio = 0)
 
+# Bar graph 
+plot_Kaep=count_Kaep %>% 
+  mutate(word5 = fct_reorder(word,n))
 
-## Word Count for Top 10 Most Favorited Tweets
-TopFav_word = TopFav %>% 
-  unnest_tokens(word, tweet_full_text)
-
-## TopFav Word Count
-TopFav_wordcount = TopFav_word %>% 
-  count(word) %>% 
-  mutate(FavWord = fct_reorder(word, n)) %>% 
-  anti_join(stop_words2) %>% 
-  top_n(30,n)
-
-## Visualization of Tokenized Text in the Top 10 Favorited Tweets 
-TopFav_wordcountplot = ggplot(TopFav_wordcount, aes(x=FavWord, y=n, fill=n))+
+# Visualization
+ggplot(data=plot_Kaep, aes(word5, n, fill=word5))+
   geom_col(show.legend = FALSE)+
   coord_flip()+
-  labs(title = "Keywords Used in Response to the Ad Campaign",
-       subtitle = "Sample Size: Top 10 Favorited Tweets",
-       x = "Word",
-       y = "Number of Occurrences")
-
-![image](https://user-images.githubusercontent.com/90916159/134451340-0cc33d9d-322e-42df-8c5c-4215dbf60292.png)
-
-## Word Count for Top 10 Most Retweeted Tweets
-TopRT_word = TopRT %>% 
-  unnest_tokens(word, tweet_full_text)
-
-TopRT_wordcount = TopRT_word %>% 
-  count(word) %>% 
-  mutate(RTWord = fct_reorder(word,n)) %>% 
-  anti_join(stop_words2) %>% 
-  top_n(30, n)
-  
-## Visualization of Tokenized Text in the Top 10 Favorited Retweets 
-TopRT_wordcountplot = ggplot(TopRT_wordcount, aes(x=RTWord, y=n, fill=n))+
-  geom_col(show.legend = FALSE)+
-  coord_flip()+
-  labs(title = "Keywords Used in Response to the Ad Campaign",
-       subtitle = "Sample Size: Top 10 Retweeted Tweets",
-       x = "Word",
-       y = "Number of Occurrences")
-
-![image](https://user-images.githubusercontent.com/90916159/134451358-554704cb-1586-48b5-8d07-19b33e356d19.png)
-
-## Appending Dictionaries - bing
-Append_twitter = tidy_twitter %>% 
-  inner_join(get_sentiments("bing"))
-
-## Counting Sentiment
-Count_twitter_sentiment = Append_twitter %>% 
-  count(word, sentiment) %>% 
-  arrange(desc(n))
- 
-## Visualizing Sentiment
-sentiment_twitter = Count_twitter_sentiment %>% 
-  filter(sentiment %in% c("positive", "negative")) %>% 
-  top_n(55, n)
-  
-ggplot(sentiment_twitter, aes(x=word, y=n, fill=sentiment))+
-  geom_col(show.legend = FALSE)+
-  facet_wrap(~sentiment, scales = "free")+
-  coord_flip()+
-  labs(title = "Sentiment Word Counts", x = "Words")
-  
- ![image](https://user-images.githubusercontent.com/90916159/134451405-969849b7-2ac6-4478-8ab7-e42fea821fe1.png)
-
-## Using spread() to spread the sentiment column in to two separate columns (e.g., pos or neg)
-xyz = Append_twitter %>% 
-  count(tweet_in_reply_to_screen_name, sentiment) %>% 
-  spread(sentiment, n)
-  
-
-
-
-
-
+  labs(title = "Words Frequently Used When Twitter Mentioned @Kaepernick7 in a Tweet",
+       x="Words",
+       y="Frequency")
