@@ -83,8 +83,7 @@ Dataset(https://www.kaggle.com/eliasdabbas/5000-justdoit-tweets-dataset?select=j
 
 ## Descriptive Analysis 
 
-**![image](https://user-images.githubusercontent.com/90916159/143937918-b7de2e3f-194e-46bc-9830-10a61338a045.png)
-**
+![image](https://user-images.githubusercontent.com/90916159/143939172-6414d7de-ea82-48d5-a078-c199e58d5034.png)
 
 #JustDoIt Case Study
 
@@ -313,7 +312,7 @@ wordcloud2(count_Serena, rotateRatio = 0)
 plot_Serena = count_Serena %>% 
   mutate(word4 = fct_reorder(word, n))
 
-# VIsualization 
+# Visualization 
 ggplot(data=plot_Serena, aes(x=word4,y=n, fill=word4))+
   geom_col(show.legend = FALSE)+
   coord_flip()+
