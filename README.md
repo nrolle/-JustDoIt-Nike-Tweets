@@ -35,27 +35,28 @@ library(wordcloud2)
 # Read in File
 JustDoIt = read.csv("C:/Users/Nick/Desktop/justdoit_tweets_2018_09_07_2.csv")
 
-# Selecting relevant columns
+# Data Cleaning 
 Tweets = JustDoIt %>% 
   select(tweet_full_text, user_verified, tweet_retweet_count, tweet_favorite_count, user_screen_name, tweet_in_reply_to_screen_name, user_description, user_followers_count)
 
+Tweets2 = Tweets[-c(1466),]
+
 # Number of rows in the Dataset 
-nrow(Tweets)
+nrow(Tweets2)
 
 # Number of columns in the Dataset
-ncol(Tweets)
+ncol(Tweets2)
 
 # Overview of the Dataset
-str(Tweets)
+str(Tweets2)
 
 # Sample Tweet 
-sample = Tweets %>% 
+sample = Tweets2 %>% 
   select(user_screen_name, tweet_full_text)
 
 sample_n(sample,1)
 
-# Removing the Mark Hamill Tweet 
-Tweets2 = Tweets[-c(1466),]
+
 
 # Tokenzing the Dataset
 tidy_Tweets = Tweets2 %>% 
