@@ -35,7 +35,7 @@ Dataset(https://www.kaggle.com/eliasdabbas/5000-justdoit-tweets-dataset?select=j
 - I used the "NRC" dictionary to examine the overall emotional valence of the text
 - The "NRC" dictionary defines each unique word as either negative, postiive, fear, anger, trust, sadness, disgust, anticipation, joy, or surprise
 
-![alt text](b91e33cd-d9ed-45c2-91e2-3d2611227db7.jpg)
+![image](https://user-images.githubusercontent.com/90916159/143910605-118bc726-6757-4e63-86de-240a575cd1d4.png)
 
 #JustDoIt Case Study
 
