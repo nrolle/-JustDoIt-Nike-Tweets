@@ -1,11 +1,14 @@
 # Nike #JustDoIt Marketing Campaign Tweets Dataset: Project Overview  (https://nrolle.github.io/-JustDoIt-Nike-Tweets/)
+- Wrangled and tokenized the text of 5,000 tweets
+- Visualized word counts using word clouds and bar graphs
+- Performed sentiment analysis to identify the overall emotion of the text 
 
 This is a case study surrounding a marketing campaign conducted by Nike back in 2018. The dataset contains approximately 5,000 tweets in response to the marketing campaign. This particular marketing campaign is significant to me because it marked the day that Nike publicly stood with athlete and activist Colin Kaepernick in his efforts to bring attention to police brutality and the mistreatment of black and brown people in the United States. The objective of this project is to gain some insight in how the public reacted to Nike's marketing campaign. I will be accomplishing this through tokenzing the text, sentiment analysis, and some graphical and numerical summaries of the dataset. 
 
 
 ## Code and Resources Used
 **RStudio Version:** 1.4.1103 
-**Packages:** tidyverse, dplyr, tibble, tidytext, textdata, topicmodels, tm
+**Packages:** tidyverse, dplyr, tibble, tidytext, textdata, worldcloud2
 Dataset(https://www.kaggle.com/eliasdabbas/5000-justdoit-tweets-dataset?select=justdoit_tweets_2018_09_07_2.csv)
 
 #JustDoIt Case Study
@@ -17,8 +20,6 @@ Dataset(https://www.kaggle.com/eliasdabbas/5000-justdoit-tweets-dataset?select=j
 #install.packages("tibble")
 #install.packages("tidytext")
 #install.packages("textdata")
-#install.packages("topicmodels")
-#install.packages("tm")
 #install.packages("wordcloud2")
 
 # Setting up the R Environment - Loading Libraries 
