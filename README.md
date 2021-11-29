@@ -34,18 +34,18 @@ Dataset(https://www.kaggle.com/eliasdabbas/5000-justdoit-tweets-dataset?select=j
 ## Sentiment Analysis 
 - I used the "NRC" dictionary to examine the overall emotional valence of the text
 - The "NRC" dictionary defines each unique word as either negative, postiive, fear, anger, trust, sadness, disgust, anticipation, joy, or surprise
-
+![]
 
 
 #JustDoIt Case Study
 
-##install necessary packages 
-#install.packages("tidyverse")
-#install.packages("dplyr")
-#install.packages("tibble")
-#install.packages("tidytext")
-#install.packages("textdata")
-#install.packages("wordcloud2")
+## Install necessary packages 
+install.packages("tidyverse")
+install.packages("dplyr")
+install.packages("tibble")
+install.packages("tidytext")
+install.packages("textdata")
+install.packages("wordcloud2")
 
 # Setting up the R Environment - Loading Libraries 
 library(tidyverse)
