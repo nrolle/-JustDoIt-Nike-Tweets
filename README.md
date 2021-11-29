@@ -5,14 +5,39 @@
 
 This is a case study surrounding a marketing campaign conducted by Nike back in 2018. The dataset contains approximately 5,000 tweets in response to the marketing campaign. This particular marketing campaign is significant to me because it marked the day that Nike publicly stood with athlete and activist Colin Kaepernick in his efforts to bring attention to police brutality and the mistreatment of black and brown people in the United States. The objective of this project is to gain some insight in how the public reacted to Nike's marketing campaign. I will be accomplishing this through tokenzing the text, sentiment analysis, and some graphical and numerical summaries of the dataset. 
 
-
 ## Code and Resources Used
 **RStudio Version:** 1.4.1103 
 **Packages:** tidyverse, dplyr, tibble, tidytext, textdata, worldcloud2
 Dataset(https://www.kaggle.com/eliasdabbas/5000-justdoit-tweets-dataset?select=justdoit_tweets_2018_09_07_2.csv)
 
-#JustDoIt Case Study
+## Data Cleaning 
+- Selected only the columns deseriable for analysis and assigned them into a new data frame  
+- Removed tweets that did not relate to the topic (for example, renowned actor, Mark Hamill made a tweet using #JustDoIt that had nothing to do with Nike or the marketing campaign)
 
+## Removing Stop Words
+- Stop words are common words that are not insightful for our analysis (such as the, like, and,etc.) 
+- Created a data frame composed of custom stop words 
+- A data frame of common stop words are available in the tidytext package as "stop_words"
+- Combined the data frame "stop_words" and my "custom_stop_words" 
+- This is to ensure that R ignores words that are not insightful in our analysis
+
+## Tokenzing the dataset 
+- Some basic Natural Language Processing (NLP) Vocabulary
+  - Every unique word is a term
+  - Every occurrence of a term is a token
+  - Tokenzing is the process of creating a "bag of words"
+- Created a new object that gives us a column with a unique word in each row from each tweet 
+
+## Counting the words
+- Now that we imposed structure to the text we can count the words
+
+## Sentiment Analysis 
+- I used the "NRC" dictionary to examine the overall emotional valence of the text
+- The "NRC" dictionary defines each unique word as either negative, postiive, fear, anger, trust, sadness, disgust, anticipation, joy, or surprise
+
+
+
+#JustDoIt Case Study
 
 ##install necessary packages 
 #install.packages("tidyverse")
@@ -56,8 +81,44 @@ sample = Tweets2 %>%
 
 sample_n(sample,1)
 
+# Removing words that are insigificant to the analysis
+custom_stop_words = tribble(~word,
+                            "â","ðÿ","https","ï","t.co","realdonaldtrump",
+                            "thinking","amp","kaepernick7","kaepernick", 
+                            "president","justdoit","nike","trump",
+                            "people","ºðÿ","youâ","âœ","takeaknee","colinkaepernick","donâ","theyâ",
+                            "ðÿš","potus","black","job","ve","shoes","white","unlike","money","real","weâ",
+                            "wear","means","message","buy","stock","amendement","business","america",
+                            "tweet", "world","time","american","country","care","americans","ˆðÿ‘ÿðÿ",
+                            "attention","bought","hey","canâ","ðÿ’ªðÿ","iâ","idk","paid","thatâ",
+                            "wearing","commercial", "ad", "campaign","âœšðÿ","itâ","nikead","å","athletes",
+                            "justdidit","marketing","pair","bogo","æœ","œðÿ","ä","15","ck","colin","æ",
+                            "advertising",
+                            "cqzvnmockn","doesnâ","customer","kapernick","nfl","æ­","apparel","ðÿ‘œ",
+                            "ðÿ‘ÿ","nikeâ","nikecommercial","nikestore","serenawilliams","tonight's",
+                            "waiting","yâ","workers","weekend","taking","saturday","ðÿž","advances","7th",
+                            "ceio2wcuyr","gkzrtyolqk","ll","lil","olc766xhvz","quicker","tonightâ",
+                            "womenâ","themasb1","cutieðÿ’œ","ðÿ’ª","2","5i9egyh9tk","paylessinsider",
+                            "payless","nflpa","nflcommish","gbmnyc","kstills",
+                            "mosesbread72","1jedi_rey","havok_2o18","theswprincess","listentoezra",
+                            "debbieinsideris","jeffbfish","knot4sharing","malcolmjenkins","kingjames",
+                            "imwithkaep", "matthewwolfff","kneel","jynerso_2017","jainaresists","b52malmet",
+                            "deadpoolresists","debbiesideris","jynerso_2017","lady_star_gem","minervasbard",
+                            "natcookresists","rebelscumpixie","sabineresists","trinityresists","drawing",
+                            "batmanresist","brandontxneely","blue","captainslog2o18","earl_thomas","exercise",
+                            "nateboyer37","plays","realtomsongs","tdlockett12","trisresists","xtxoan4y7d",
+                            "ybbkaren","zmndpufdoh", "president","police","football","gear","lord","god",
+                            "military","catch","school","labor","wait","feeling","vote","pay","deal","words","coming",
+                            "finally","shot","chance","guess","leave","change","mouth","fisa","1st","1",
+                            "10","nikes","blah","orange","buying","single","anonymous","office","stuff",
+                            "life","kids","lie","bad","btw","concept","level","players","kap",
+                            "national","serve","social","sell","company","true","decision","watching","running",
+                            "guy","ooh","f45", "gum", "chose","yr","uk","ðÿž","ev","front","head","chaserâ",
+                            "dawn","jedimasterdre","land")
 
-
+stop_words2 = stop_words %>% 
+  bind_rows(custom_stop_words)
+  
 # Tokenzing the Dataset
 tidy_Tweets = Tweets2 %>% 
   unnest_tokens(word,tweet_full_text) %>% 
@@ -127,44 +188,6 @@ ggplot(data=Replies_3, aes(x=n2, y=n, fill = n2))+
 # Filtering for tweets that mention Donald Trump 
 Trump = Tweets2 %>% 
   filter(Tweets2$tweet_in_reply_to_screen_name == "realDonaldTrump")
-
-# Removing words that are insigificant to the analysis
-custom_stop_words = tribble(~word,
-                            "â","ðÿ","https","ï","t.co","realdonaldtrump",
-                            "thinking","amp","kaepernick7","kaepernick", 
-                            "president","justdoit","nike","trump",
-                            "people","ºðÿ","youâ","âœ","takeaknee","colinkaepernick","donâ","theyâ",
-                            "ðÿš","potus","black","job","ve","shoes","white","unlike","money","real","weâ",
-                            "wear","means","message","buy","stock","amendement","business","america",
-                            "tweet", "world","time","american","country","care","americans","ˆðÿ‘ÿðÿ",
-                            "attention","bought","hey","canâ","ðÿ’ªðÿ","iâ","idk","paid","thatâ",
-                            "wearing","commercial", "ad", "campaign","âœšðÿ","itâ","nikead","å","athletes",
-                            "justdidit","marketing","pair","bogo","æœ","œðÿ","ä","15","ck","colin","æ",
-                            "advertising",
-                            "cqzvnmockn","doesnâ","customer","kapernick","nfl","æ­","apparel","ðÿ‘œ",
-                            "ðÿ‘ÿ","nikeâ","nikecommercial","nikestore","serenawilliams","tonight's",
-                            "waiting","yâ","workers","weekend","taking","saturday","ðÿž","advances","7th",
-                            "ceio2wcuyr","gkzrtyolqk","ll","lil","olc766xhvz","quicker","tonightâ",
-                            "womenâ","themasb1","cutieðÿ’œ","ðÿ’ª","2","5i9egyh9tk","paylessinsider",
-                            "payless","nflpa","nflcommish","gbmnyc","kstills",
-                            "mosesbread72","1jedi_rey","havok_2o18","theswprincess","listentoezra",
-                            "debbieinsideris","jeffbfish","knot4sharing","malcolmjenkins","kingjames",
-                            "imwithkaep", "matthewwolfff","kneel","jynerso_2017","jainaresists","b52malmet",
-                            "deadpoolresists","debbiesideris","jynerso_2017","lady_star_gem","minervasbard",
-                            "natcookresists","rebelscumpixie","sabineresists","trinityresists","drawing",
-                            "batmanresist","brandontxneely","blue","captainslog2o18","earl_thomas","exercise",
-                            "nateboyer37","plays","realtomsongs","tdlockett12","trisresists","xtxoan4y7d",
-                            "ybbkaren","zmndpufdoh", "president","police","football","gear","lord","god",
-                            "military","catch","school","labor","wait","feeling","vote","pay","deal","words","coming",
-                            "finally","shot","chance","guess","leave","change","mouth","fisa","1st","1",
-                            "10","nikes","blah","orange","buying","single","anonymous","office","stuff",
-                            "life","kids","lie","bad","btw","concept","level","players","kap",
-                            "national","serve","social","sell","company","true","decision","watching","running",
-                            "guy","ooh","f45", "gum", "chose","yr","uk","ðÿž","ev","front","head","chaserâ",
-                            "dawn","jedimasterdre","land")
-
-stop_words2 = stop_words %>% 
-  bind_rows(custom_stop_words)
 
 # Tokenzing text 
 tidy_Trump = Trump %>% 
