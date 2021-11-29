@@ -1,4 +1,4 @@
-# (Project Overview: Nike #JustDoIt Case Study)(https://nrolle.github.io/-JustDoIt-Nike-Tweets/)
+# Nike #JustDoIt Marketing Campaign Tweets Dataset: Project Overview  (https://nrolle.github.io/-JustDoIt-Nike-Tweets/)
 
 This is a case study surrounding a marketing campaign conducted by Nike back in 2018. The dataset contains approximately 5,000 tweets in response to the marketing campaign. This particular marketing campaign is significant to me because it marked the day that Nike publicly stood with athlete and activist Colin Kaepernick in his efforts to bring attention to police brutality and the mistreatment of black and brown people in the United States. The objective of this project is to gain some insight in how the public reacted to Nike's marketing campaign. I will be accomplishing this through tokenzing the text, sentiment analysis, and some graphical and numerical summaries of the dataset. 
 
