@@ -31,11 +31,60 @@ Dataset(https://www.kaggle.com/eliasdabbas/5000-justdoit-tweets-dataset?select=j
 ## Counting the words
 - Now that we imposed structure to the text we can count the words
 
-## Sentiment Analysis 
+## Appending NRC Dictionary
+- The Tidytext package includes 4 distinct sentiment dictionaries that works to tag each unique word with a sentiment 
 - I used the "NRC" dictionary to examine the overall emotional valence of the text
 - The "NRC" dictionary defines each unique word as either negative, postiive, fear, anger, trust, sadness, disgust, anticipation, joy, or surprise
 
+
+## Sentiment Analysis 
+- By counting the number of occurreneces for each sentiment, we can get an understanding for the overall emotional valence of the text
+- I created a bar graph to visualize what sentiment occurs the most 
+
 ![image](https://user-images.githubusercontent.com/90916159/143910605-118bc726-6757-4e63-86de-240a575cd1d4.png)
+
+## Top Twitter Handles Mentioned 
+- I created a data frame that told me what twitter handles were mentioned the most in these tweets
+- I used a bar graph to visualize this 
+
+![image](https://user-images.githubusercontent.com/90916159/143911918-218f2d21-95b9-4550-8e4c-656a9f3f01a0.png)
+
+## Trump, Kaepernick, Nike, Serena Williams
+- In the previous bar graph we saw that the top twitter handles mentioned in this data set was Former President Donald Trump, Colin Kaepernick, Nike, and Serena Williams
+- I thought it was be interesting to go further and look at the words and sentiment used when twitter users mentioned these influential figures
+
+## Trump - Word Cloud & Bar Graph
+- I created a word cloud and bar graph to see the language used when twitter users mentioned @realDonaldTrump
+
+![image](https://user-images.githubusercontent.com/90916159/143912523-00682633-150e-4331-aaa6-84f4e8f8ac48.png)
+
+![image](https://user-images.githubusercontent.com/90916159/143912576-2127a30d-03db-4325-a0b3-029fdc1b8151.png)
+
+## Nike - Word Cloud & Bar Graph
+- I created a word cloud and bar graph to see the language used when twitter users mentioned @Nike 
+
+![image](https://user-images.githubusercontent.com/90916159/143912693-391eb6b7-eb60-471b-a603-7a4ad294db59.png)
+
+![image](https://user-images.githubusercontent.com/90916159/143912724-c76cfb99-acad-49eb-8b2e-3b3f1d73c153.png)
+
+## Serena Williams - Word Cloud & Bar Graph 
+- I created a word cloud and bar graph to see the language used when twitter users mentioned @serenawilliams
+
+![image](https://user-images.githubusercontent.com/90916159/143912847-b86fcaba-cef7-4e0c-a2aa-c6fc98be30a8.png)
+
+![image](https://user-images.githubusercontent.com/90916159/143912982-70d0cabb-51d6-49f8-a6da-0c106a945604.png)
+
+## Colin Kaepernick - Word Cloud & Bar Graph
+- I created a word cloud and bar graph to see the lagnauge used when twitter users mentioned @Kaepernick7
+
+![image](https://user-images.githubusercontent.com/90916159/143913064-3c58721e-32ad-4fc2-ba34-14fd39ce647a.png)
+
+![image](https://user-images.githubusercontent.com/90916159/143913085-5795c8cb-c26f-4196-b903-306c5691a800.png)
+
+## Descriptive Analysis 
+
+**![image](https://user-images.githubusercontent.com/90916159/143937918-b7de2e3f-194e-46bc-9830-10a61338a045.png)
+**
 
 #JustDoIt Case Study
 
@@ -129,7 +178,7 @@ count_Tweets = tidy_Tweets %>%
   count(word) %>%
   arrange(desc(n))
 
-# Using inner_join to join our tokenized dataframe and the nrc dictionary  
+# Appending NRC Dictionary  
 sentiment_tweets = tidy_Tweets %>% 
   inner_join(get_sentiments("nrc"))
 
