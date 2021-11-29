@@ -10,7 +10,6 @@ Dataset(https://www.kaggle.com/eliasdabbas/5000-justdoit-tweets-dataset?select=j
 
 #JustDoIt Case Study
 
-###################################################
 
 ##install necessary packages 
 #install.packages("tidyverse")
@@ -35,8 +34,6 @@ library(wordcloud2)
 # Read in File
 JustDoIt = read.csv("C:/Users/Nick/Desktop/justdoit_tweets_2018_09_07_2.csv")
 
-######################################################################################################
-
 # Selecting relevant columns
 Tweets = JustDoIt %>% 
   select(tweet_full_text, user_verified, tweet_retweet_count, tweet_favorite_count, user_screen_name, tweet_in_reply_to_screen_name, user_description, user_followers_count)
@@ -59,7 +56,6 @@ sample_n(sample,1)
 # Removing the Mark Hamill Tweet 
 Tweets2 = Tweets[-c(1466),]
 
-######################################################################################################
 # Tokenzing the Dataset
 tidy_Tweets = Tweets2 %>% 
   unnest_tokens(word,tweet_full_text) %>% 
@@ -104,7 +100,6 @@ ggplot(word_counts, aes(x=word2, y=n,fill=sentiment))+
   labs(title = "Sentiment Word Counts",
        x="Words")
 
-######################################################################################################
 # Top Twitter Handles mentioned
 Replies = Tweets2 %>% 
   select(tweet_in_reply_to_screen_name) %>% 
@@ -126,8 +121,6 @@ ggplot(data=Replies_3, aes(x=n2, y=n, fill = n2))+
   ggtitle("Top Twitter Handles Mentioned")+
   xlab("Twitter Handle")+
   ylab("Number of Mentions")
-
-######################################################################################################
 
 # Filtering for tweets that mention Donald Trump 
 Trump = Tweets2 %>% 
@@ -197,7 +190,6 @@ ggplot(count_Trump2, aes(x=word2, y=n, fill=word))+
   coord_flip()+
   labs(title = "Words Frequently Used When Mentioning Trump", x = "Frequency", y = "Words")
 
-######################################################################################################
 # Filtering tweets that mention @Nike
 Nike = Tweets2 %>% filter(Tweets2$tweet_in_reply_to_screen_name == "Nike")
 
@@ -225,8 +217,6 @@ ggplot(data=plot_Nike, aes(x=word3, y=n, fill = word))+
   geom_col(show.legend = FALSE)+
   coord_flip()+
   labs(title = "Words Frequently Used when Twitter mentioned @Nike", x = "Words", y = "Frequency")
-
-######################################################################################################
 
 # Tweets at Serena Williams
 Serena = Tweets2 %>% 
@@ -256,7 +246,6 @@ ggplot(data=plot_Serena, aes(x=word4,y=n, fill=word4))+
   labs(title = "Words Frequently Used When Twitter Mentioned @serenawilliams in a Tweet", 
        x="Words",y="Frequency")
 
-##########################################################################################
 # Filtering for tweets that mention @Kaepernick7
 Kaep = Tweets2 %>% 
   filter(Tweets2$tweet_in_reply_to_screen_name == "Kaepernick7")
