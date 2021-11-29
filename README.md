@@ -81,9 +81,9 @@ Dataset(https://www.kaggle.com/eliasdabbas/5000-justdoit-tweets-dataset?select=j
 
 ![image](https://user-images.githubusercontent.com/90916159/143913085-5795c8cb-c26f-4196-b903-306c5691a800.png)
 
-## Descriptive Analysis 
-
-![image](https://user-images.githubusercontent.com/90916159/143939172-6414d7de-ea82-48d5-a078-c199e58d5034.png)
+## Conclusion 
+- This marketing campaign was a successful brand marketing strategy for Nike
+- At the time, not many companies had taken a stanceo n the topic of athlete activism in sport. For Nike to take a stance instead of remaining neutral was risky, however, it ultimately resonated well with its ocnsumes and reinforced the brand's identity
 
 #JustDoIt Case Study
 
